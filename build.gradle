@@ -1,0 +1,85 @@
+plugins {
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    // Compiled with JDK 22 (see gradle.properties) but targets a widely
+    // compatible bytecode level.
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+application {
+    mainClass = 'org.digger.DiggerApp'
+}
+
+// Make `gradle run` behave like the original: a single windowed instance.
+run {
+    standardInput = System.in
+    // Pass any command-line args through:  gradle run --args="/I:3"
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'org.digger.DiggerApp'
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Distributions
+//
+//  * Without a bundled JDK:  ./gradlew distZip      (needs Java installed)
+//    -> build/distributions/digger-java.zip  (bin/ launch scripts + lib/ jars)
+//    or  ./gradlew installDist -> build/install/digger-java/
+//
+//  * With a bundled JDK:     ./gradlew jpackageImage (no Java needed to run)
+//    -> build/jpackage/Digger/Digger.exe  (self-contained app image)
+//    and ./gradlew jpackageZip -> build/distributions/Digger-app-image.zip
+// ---------------------------------------------------------------------------
+
+import org.gradle.internal.os.OperatingSystem
+
+def osWin = OperatingSystem.current().isWindows()
+def exe = osWin ? '.exe' : ''
+// jpackage from the JDK that is running Gradle (see gradle.properties).
+def jpackageBin = "${System.getProperty('java.home')}/bin/jpackage${exe}"
+def jpackageOut = layout.buildDirectory.dir('jpackage')
+
+tasks.register('jpackageImage', Exec) {
+    group = 'distribution'
+    description = 'Build a self-contained app image with a bundled Java runtime (jpackage).'
+    dependsOn tasks.named('jar')
+
+    def outDir = jpackageOut.get().asFile
+    inputs.files(tasks.named('jar'))
+    outputs.dir(outDir)
+
+    doFirst {
+        // jpackage refuses to overwrite an existing app image.
+        delete outDir
+        outDir.mkdirs()
+    }
+
+    commandLine jpackageBin,
+            '--type', 'app-image',
+            '--name', 'Digger',
+            '--input', layout.buildDirectory.dir('libs').get().asFile,
+            '--main-jar', tasks.named('jar').get().archiveFileName.get(),
+            '--main-class', 'org.digger.DiggerApp',
+            '--app-version', '1.0',
+            '--dest', outDir,
+            '--java-options', '-Xmx256m'
+}
+
+tasks.register('jpackageZip', Zip) {
+    group = 'distribution'
+    description = 'Zip the self-contained (bundled-JDK) app image.'
+    dependsOn tasks.named('jpackageImage')
+    from jpackageOut
+    archiveFileName = 'Digger-app-image.zip'
+    destinationDirectory = layout.buildDirectory.dir('distributions')
+}
