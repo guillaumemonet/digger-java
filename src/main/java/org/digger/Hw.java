@@ -1,6 +1,5 @@
 package org.digger;
 
-import java.awt.event.KeyEvent;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -62,42 +61,101 @@ public final class Hw {
         return k == null ? 0 : k;
     }
 
-    /** Fed from the EDT KeyListener. */
-    public static synchronized void keyEvent(KeyEvent e, boolean pressed) {
-        int vk = e.getKeyCode();
+    /**
+     * Fed from the platform input layer (Swing KeyListener, Android View).
+     *
+     * @param vk      key code using {@link Keys} (AWT-compatible) values
+     * @param keyChar typed character, or {@link Keys#CHAR_UNDEFINED}
+     */
+    public static synchronized void keyEvent(int vk, char keyChar, boolean pressed) {
         if (vk >= 0 && vk < held.length) {
             held[vk] = pressed;
         }
         if (pressed) {
-            typed.add(mapTyped(e));
-            if (typed.size() > 64) {
-                typed.poll();
+            pushTyped(mapTyped(vk, keyChar));
+        }
+    }
+
+    /** Queue an already-mapped "akeypressed" code (e.g. a character from a soft keyboard). */
+    public static synchronized void pushTyped(int code) {
+        typed.add(code);
+        if (typed.size() > 64) {
+            typed.poll();
+        }
+    }
+
+    // ---- Platform hooks ----------------------------------------------------
+
+    /**
+     * Directory where DIGGER.INI, DIGGER.SCO and recordings live. {@code null}
+     * means the current working directory (desktop default). Android sets this
+     * to the app's private files directory.
+     */
+    public static volatile java.io.File dataDir = null;
+
+    /** Resolve a data file name against {@link #dataDir}. Absolute paths pass through. */
+    public static java.io.File file(String name) {
+        java.io.File f = new java.io.File(name);
+        if (dataDir == null || f.isAbsolute()) {
+            return f;
+        }
+        return new java.io.File(dataDir, name);
+    }
+
+    /**
+     * True while the game is waiting for typed text (high-score initials), so
+     * a touch platform can raise its on-screen keyboard.
+     */
+    public static volatile boolean textInput = false;
+
+    private static final Object suspendLock = new Object();
+    private static boolean suspended = false;
+
+    /**
+     * Freeze / resume the game loop (Android calls this when the app goes to the
+     * background). Only affects wall-clock pacing, never game logic.
+     */
+    public static void setSuspended(boolean s) {
+        synchronized (suspendLock) {
+            suspended = s;
+            suspendLock.notifyAll();
+        }
+    }
+
+    /** Called once per frame from the game thread; blocks while suspended. */
+    static void waitWhileSuspended() {
+        synchronized (suspendLock) {
+            while (suspended) {
+                try {
+                    suspendLock.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
             }
         }
     }
 
     /** Map a key press to the "akeypressed" code the game logic expects. */
-    private static int mapTyped(KeyEvent e) {
-        int vk = e.getKeyCode();
+    private static int mapTyped(int vk, char c) {
         switch (vk) {
-            case KeyEvent.VK_ESCAPE: return 27;
-            case KeyEvent.VK_ENTER: return 13;
-            case KeyEvent.VK_SPACE: return 32;
-            case KeyEvent.VK_BACK_SPACE: return 8;
-            case KeyEvent.VK_F7: return Inp.KC_MUSIC;
-            case KeyEvent.VK_F9: return Inp.KC_SOUND;
-            case KeyEvent.VK_F10: return Inp.KC_EXIT;
-            case KeyEvent.VK_F8: return Inp.KC_SAVEDRF;
-            case KeyEvent.VK_ADD:
-            case KeyEvent.VK_PLUS:
-            case KeyEvent.VK_EQUALS: return '+';
-            case KeyEvent.VK_SUBTRACT:
-            case KeyEvent.VK_MINUS: return '-';
+            case Keys.VK_ESCAPE: return 27;
+            case Keys.VK_ENTER: return 13;
+            case Keys.VK_SPACE: return 32;
+            case Keys.VK_BACK_SPACE: return 8;
+            case Keys.VK_F7: return Inp.KC_MUSIC;
+            case Keys.VK_F9: return Inp.KC_SOUND;
+            case Keys.VK_F10: return Inp.KC_EXIT;
+            case Keys.VK_F8: return Inp.KC_SAVEDRF;
+            case Keys.VK_ADD:
+            case Keys.VK_PLUS:
+            case Keys.VK_EQUALS: return '+';
+            case Keys.VK_SUBTRACT:
+            case Keys.VK_MINUS: return '-';
             default:
                 if (vk >= 'A' && vk <= 'Z') return vk;           // upper-case
                 if (vk >= '0' && vk <= '9') return vk;
-                char c = e.getKeyChar();
-                if (c != KeyEvent.CHAR_UNDEFINED && c >= ' ' && c < 127) {
+                if (c != Keys.CHAR_UNDEFINED && c >= ' ' && c < 127) {
                     return Character.toUpperCase(c);
                 }
                 return 256 + vk;   // unique non-clashing sentinel

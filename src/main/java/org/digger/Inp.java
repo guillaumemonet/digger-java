@@ -1,6 +1,5 @@
 package org.digger;
 
-import java.awt.event.KeyEvent;
 
 import static org.digger.Def.*;
 
@@ -38,16 +37,16 @@ public final class Inp {
     // keycodes[i][0] = held key (VK) for movement/fire rows 0..9, or the
     // akeypressed match code for control rows 10..16. Other columns unused (-2).
     public static final int[][] keycodes = {
-            {KeyEvent.VK_RIGHT, -2, -2, -2, -2},  // 0 P1 Right
-            {KeyEvent.VK_UP, -2, -2, -2, -2},     // 1 P1 Up
-            {KeyEvent.VK_LEFT, -2, -2, -2, -2},   // 2 P1 Left
-            {KeyEvent.VK_DOWN, -2, -2, -2, -2},   // 3 P1 Down
-            {KeyEvent.VK_F1, -2, -2, -2, -2},     // 4 P1 Fire
-            {KeyEvent.VK_D, -2, -2, -2, -2},      // 5 P2 Right
-            {KeyEvent.VK_W, -2, -2, -2, -2},      // 6 P2 Up
-            {KeyEvent.VK_A, -2, -2, -2, -2},      // 7 P2 Left
-            {KeyEvent.VK_S, -2, -2, -2, -2},      // 8 P2 Down
-            {KeyEvent.VK_CONTROL, -2, -2, -2, -2},// 9 P2 Fire
+            {Keys.VK_RIGHT, -2, -2, -2, -2},  // 0 P1 Right
+            {Keys.VK_UP, -2, -2, -2, -2},     // 1 P1 Up
+            {Keys.VK_LEFT, -2, -2, -2, -2},   // 2 P1 Left
+            {Keys.VK_DOWN, -2, -2, -2, -2},   // 3 P1 Down
+            {Keys.VK_F1, -2, -2, -2, -2},     // 4 P1 Fire
+            {Keys.VK_D, -2, -2, -2, -2},      // 5 P2 Right
+            {Keys.VK_W, -2, -2, -2, -2},      // 6 P2 Up
+            {Keys.VK_A, -2, -2, -2, -2},      // 7 P2 Left
+            {Keys.VK_S, -2, -2, -2, -2},      // 8 P2 Down
+            {Keys.VK_CONTROL, -2, -2, -2, -2},// 9 P2 Fire
             {'T', -2, -2, -2, -2},                // 10 Cheat
             {'+', -2, -2, -2, -2},                // 11 Accelerate
             {'-', -2, -2, -2, -2},                // 12 Brake

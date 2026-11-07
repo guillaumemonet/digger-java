@@ -13,6 +13,16 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
+// src/main/java  = portable game logic (no AWT/Swing, shared with :android)
+// src/desktop/java = Swing launcher + javax.sound output (desktop only)
+sourceSets {
+    main {
+        java {
+            srcDir 'src/desktop/java'
+        }
+    }
+}
+
 application {
     mainClass = 'org.digger.DiggerApp'
 }

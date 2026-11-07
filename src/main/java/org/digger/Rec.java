@@ -204,7 +204,7 @@ public final class Rec {
         int origgtime = Main.gtime;
         boolean origg = Main.gauntlet;
         int origstartlev = Main.startlev, orignplayers = Main.nplayers, origdiggers = Main.diggers;
-        try (BufferedReader in = new BufferedReader(new FileReader(name))) {
+        try (BufferedReader in = new BufferedReader(new FileReader(Hw.file(name)))) {
             rlleft = 0;
             Main.gauntlet = false;
             Main.startlev = 1;
@@ -288,7 +288,7 @@ public final class Rec {
             String is = new String(init);
             nambuf = is + Score.scoret + ".drf";
         }
-        try (FileWriter out = new FileWriter(nambuf)) {
+        try (FileWriter out = new FileWriter(Hw.file(nambuf))) {
             for (int i = 0; i < recp; i++) {
                 out.write(recb[i]);
             }

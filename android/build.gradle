@@ -1,0 +1,64 @@
+plugins {
+    id 'com.android.application' version '9.5.1'
+}
+
+repositories {
+    google()
+    mavenCentral()
+}
+
+// Release signing: android/keystore.properties (not to be committed) with
+//   storeFile=release.jks  storePassword=...  keyAlias=...  keyPassword=...
+def ksProps = new Properties()
+def ksFile = file('keystore.properties')
+if (ksFile.exists()) {
+    ksFile.withInputStream { ksProps.load(it) }
+}
+
+android {
+    namespace = 'org.digger.android'
+    compileSdk = 36
+
+    defaultConfig {
+        applicationId = 'org.digger.remastered'
+        minSdk = 26
+        targetSdk = 36
+        versionCode = 1
+        versionName = '1.0'
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    sourceSets {
+        main {
+            // Shared, platform-neutral game logic + the original sprite assets.
+            java.srcDirs += ['../src/main/java']
+            resources.srcDirs += ['../src/main/resources']
+        }
+    }
+
+    signingConfigs {
+        if (ksFile.exists()) {
+            release {
+                storeFile = file(ksProps['storeFile'])
+                storePassword = ksProps['storePassword']
+                keyAlias = ksProps['keyAlias']
+                keyPassword = ksProps['keyPassword']
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled = true
+            shrinkResources = true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (ksFile.exists()) {
+                signingConfig = signingConfigs.release
+            }
+        }
+    }
+}

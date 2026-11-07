@@ -63,6 +63,7 @@ public final class Dig {
 
     public static void newframe() {
         long t;
+        Hw.waitWhileSuspended();
         if (Main.synchvid) {
             for (; curtime < ftime; curtime += 17094) {
                 Snd.fillbuffer();

@@ -1,9 +1,5 @@
 package org.digger;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.SourceDataLine;
-
 import static org.digger.Def.*;
 
 /**
@@ -42,19 +38,20 @@ public final class Snd {
     private static volatile boolean fxOn = false, musOn = false;
     private static Thread synthThread;
     private static volatile boolean synthRunning = false;
-    private static SourceDataLine line;
+    private static AudioSink line;
+
+    /** Platform audio output, set by the launcher before the game starts (null = silent). */
+    public static volatile java.util.function.Supplier<AudioSink> sinkFactory = null;
 
     private static void synthStart() {
         if (synthRunning) return;
-        try {
-            AudioFormat fmt = new AudioFormat(22050f, 8, 1, true, false);
-            line = AudioSystem.getSourceDataLine(fmt);
-            line.open(fmt, 4096);
-            line.start();
-        } catch (Exception e) {
+        java.util.function.Supplier<AudioSink> factory = sinkFactory;
+        AudioSink sink = factory == null ? null : factory.get();
+        if (sink == null || !sink.open()) {
             line = null;
             return; // sound unavailable: game continues silently
         }
+        line = sink;
         synthRunning = true;
         synthThread = new Thread(Snd::synthLoop, "digger-synth");
         synthThread.setDaemon(true);
@@ -68,8 +65,6 @@ public final class Snd {
             synthThread = null;
         }
         if (line != null) {
-            line.stop();
-            line.flush();
             line.close();
             line = null;
         }

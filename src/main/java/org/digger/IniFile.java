@@ -11,7 +11,7 @@ public final class IniFile {
     private IniFile() {}
 
     public static String getString(String section, String key, String def, String filename) {
-        File f = new File(filename);
+        File f = Hw.file(filename);
         if (!f.exists()) {
             return def;
         }
@@ -36,7 +36,7 @@ public final class IniFile {
     }
 
     public static void writeString(String section, String key, String value, String filename) {
-        File f = new File(filename);
+        File f = Hw.file(filename);
         List<String> lines = new ArrayList<>();
         try {
             if (f.exists()) {

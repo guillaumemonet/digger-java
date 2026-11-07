@@ -30,14 +30,14 @@ public final class Score {
         scorebuf[0] = 0;
         try {
             if (!Main.levfflag) {
-                File f = new File(SFNAME);
+                File f = Hw.file(SFNAME);
                 if (f.exists()) {
                     try (FileInputStream in = new FileInputStream(f)) {
                         in.read(scorebuf);
                     }
                 }
             } else {
-                File f = new File(Main.levfname);
+                File f = Hw.file(Main.levfname);
                 if (f.exists()) {
                     try (RandomAccessFile in = new RandomAccessFile(f, "r")) {
                         in.seek(1202);
@@ -52,11 +52,11 @@ public final class Score {
     static void writescores() {
         try {
             if (!Main.levfflag) {
-                try (FileOutputStream out = new FileOutputStream(SFNAME)) {
+                try (FileOutputStream out = new FileOutputStream(Hw.file(SFNAME))) {
                     out.write(scorebuf);
                 }
             } else {
-                try (RandomAccessFile out = new RandomAccessFile(Main.levfname, "rw")) {
+                try (RandomAccessFile out = new RandomAccessFile(Hw.file(Main.levfname), "rw")) {
                     out.seek(1202);
                     out.write(scorebuf);
                 }
@@ -232,6 +232,7 @@ public final class Score {
         Draw.outtext("_ _ _", 128, 130, 3);
         setInit(0, "...");
         Snd.killsound();
+        Hw.textInput = true;
         for (int i = 0; i < 3; i++) {
             int k = 0;
             while (k == 0) {
@@ -244,6 +245,7 @@ public final class Score {
             Vid.gwrite(i * 24 + 128, 130, k, 3);
             scoreinit[0][i] = (char) k;
         }
+        Hw.textInput = false;
         for (int i = 0; i < 20; i++) {
             flashywait(2);
         }

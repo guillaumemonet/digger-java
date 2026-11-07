@@ -1,9 +1,5 @@
 package org.digger;
 
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-
 /**
  * Video layer: the platform implementation of the VGA functions declared in
  * hardware.h / sprite.h (ginit, gclear, gpal, ginten, gputi, ggeti, gputim,
@@ -24,11 +20,6 @@ public final class Vid {
 
     private static int curPalette = 0;   // 0 or 1
     private static int curIntensity = 0; // 0 or 1
-
-    private static final BufferedImage screen =
-            new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
-    private static final int[] screenPix =
-            ((DataBufferInt) screen.getRaster().getDataBuffer()).getData();
 
     public static void ginit() { /* palette set up via Assets.load() already */ }
 
@@ -191,21 +182,6 @@ public final class Vid {
         return color;
     }
 
-    /** Debug: write the current framebuffer to a PNG (for headless verification). */
-    public static synchronized void writePng(String path) {
-        int[] p = pal();
-        BufferedImage out = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);
-        int[] op = ((DataBufferInt) out.getRaster().getDataBuffer()).getData();
-        for (int i = 0; i < fb.length; i++) {
-            op[i] = p[fb[i] & 0x0f];
-        }
-        try {
-            javax.imageio.ImageIO.write(out, "png", new java.io.File(path));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void gtitle() {
         // The original blits a 640x400 title bitmap; we clear to black and let
         // the menu (DIGGER text + animated characters) draw on top.
@@ -215,13 +191,16 @@ public final class Vid {
     public static void gretrace() { /* no-op */ }
     public static void graphicsoff() { /* no-op */ }
 
-    /** Render the indexed back buffer to an ARGB image and draw it scaled. */
-    public static synchronized void blit(Graphics g, int destW, int destH) {
+    /**
+     * Convert the indexed back buffer to packed RGB pixels (W*H ints) using the
+     * current palette. The platform layer then scales/draws them. The alpha byte
+     * is forced to 0xFF so the result is usable as ARGB too.
+     */
+    public static synchronized void renderArgb(int[] dst) {
         int[] p = pal();
         byte[] f = fb;
         for (int i = 0; i < f.length; i++) {
-            screenPix[i] = p[f[i] & 0x0f];
+            dst[i] = 0xFF000000 | p[f[i] & 0x0f];
         }
-        g.drawImage(screen, 0, 0, destW, destH, null);
     }
 }

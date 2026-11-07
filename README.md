@@ -2,7 +2,7 @@
 
 A faithful Java/Swing port of **Digger Remastered** (Copyright (c) Andrew Jenner
 1998-2004, GPL v2; original game Copyright (c) 1983 Windmill Software). The C
-sources live in the parent directory; this is a line-by-line translation of the
+sources live in `../digger-src`; this is a line-by-line translation of the
 game logic that loads the **original binary sprite/font assets** (`vga.spr`,
 `vgatext.spr`) at runtime.
 
@@ -44,6 +44,27 @@ installers, which need WiX):
 
 On Windows this yields `Digger.exe`; on macOS/Linux jpackage produces the
 platform's native app image instead.
+
+## Android
+
+`android/` is an Android app that reuses the shared game logic in
+`src/main/java` (platform-neutral) and the original sprite files; the Swing
+launcher lives in `src/desktop/java`. The module is only included when an
+Android SDK is found (`local.properties` `sdk.dir`, or `ANDROID_HOME`).
+
+```sh
+./gradlew :android:assembleRelease   # android/build/outputs/apk/release/android-release.apk
+./gradlew :android:installDebug      # install a debug build on a connected device
+```
+
+Release signing reads `android/keystore.properties` (`storeFile`,
+`storePassword`, `keyAlias`, `keyPassword`); keep it and the `.jks` out of
+version control. Without it the release APK is built unsigned.
+
+Touch controls: D-pad (bottom-left), FIRE (bottom-right), buttons for pause,
+1P/2P, music and sound (top-right); tap the playfield to start / continue.
+Back = F10 (end game / quit). Keyboards and gamepads (D-pad/stick, A/X = fire,
+Start = Enter) work too; the on-screen keyboard opens for high-score initials.
 
 ## Run
 
