@@ -1,5 +1,7 @@
 # Digger Remastered — Java port
 
+*[Version française](README_fr.md)*
+
 A faithful Java/Swing port of **Digger Remastered** (Copyright (c) Andrew Jenner
 1998-2004, GPL v2; original game Copyright (c) 1983 Windmill Software). The C
 sources live in `../digger-src`; this is a line-by-line translation of the
@@ -176,38 +178,3 @@ The engine is provided for compatibility, preservation, and educational purposes
 ### Credits
 
 Original game: Copyright (c) 1983 Windmill Software. *Digger Remastered*: Copyright (c) Andrew Jenner 1998-2004, GPL v2. Java port: **Guillaume Monet**.
-
-<details>
-<summary>Version française</summary>
-
-### Mentions légales et données du jeu
-
-#### Implémentation indépendante du moteur
-
-Ce projet est une réimplémentation indépendante du moteur de *Digger*, conçue pour reproduire le comportement du jeu d'origine sur les plateformes modernes.
-
-Le moteur a été développé à partir du code source d'origine de *Digger Remastered* (C, Copyright (c) Andrew Jenner 1998-2004, GPL v2), par analyse technique et tests de compatibilité. Ce code source n'est pas inclus dans ce dépôt.
-
-#### Fichiers du jeu d'origine
-
-Le portage charge les fichiers de sprites et de police de *Digger Remastered* (`vga.spr`, `vgatext.spr`), distribués avec ses sources sous GPL v2 ; aucun autre fichier du jeu d'origine n'est nécessaire.
-
-Eloane Studio n'héberge, ne distribue ni ne fournit de copies non autorisées de données de jeu protégées par le droit d'auteur.
-
-#### Droits d'auteur et marques
-
-Les noms, marques, graphismes, musiques et autres éléments propriétaires de *Digger* restent la propriété de leurs titulaires respectifs (Windmill Software, Andrew Jenner).
-
-Ce projet est une implémentation indépendante et non officielle ; il n'est ni affilié, ni approuvé, ni soutenu par les développeurs ou les éditeurs du jeu d'origine.
-
-#### Préservation
-
-Ce projet a pour but de préserver le comportement technique et l'expérience de jeu des jeux vidéo classiques, tout en les rendant accessibles sur les systèmes modernes.
-
-Le moteur est fourni à des fins de compatibilité, de préservation et d'éducation.
-
-#### Crédits
-
-Jeu d'origine : Copyright (c) 1983 Windmill Software. *Digger Remastered* : Copyright (c) Andrew Jenner 1998-2004, GPL v2. Portage Java : **Guillaume Monet**.
-
-</details>
