@@ -145,7 +145,7 @@ collisions read back rendered pixels via `ggetpix`, exactly as the original did.
 * **DRF** recording works (press F8 to save); playback is available via `/P`.
 * CGA mode and the joystick are not ported (VGA + keyboard only).
 
-The two `-Ddigger.*` system properties (`shot`, `shotdelay`, `autostart`) are
+The three `-Ddigger.*` system properties (`shot`, `shotdelay`, `autostart`) are
 debug hooks used to capture screenshots headlessly; they have no effect in
 normal play.
 

@@ -151,7 +151,7 @@ correspondance d'indices de sprites `vgatable` de `mkg.c`. Les palettes de 16 co
   est disponible via `/P`.
 * Le mode CGA et le joystick ne sont pas portés (VGA + clavier uniquement).
 
-Les deux propriétés système `-Ddigger.*` (`shot`, `shotdelay`, `autostart`) sont des
+Les trois propriétés système `-Ddigger.*` (`shot`, `shotdelay`, `autostart`) sont des
 points d'accroche de débogage servant à capturer des captures d'écran sans affichage ;
 elles n'ont aucun effet en jeu normal.
 
